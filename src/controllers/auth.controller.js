@@ -6,20 +6,20 @@ export const register = async (req, res) => {
   const { username, email, password } = req.body;
   try {
     const passwordHash = await bcryptjs.hash(password, 10);
-    const userSaved = await new User({
+    const savedUser = await new User({
       username,
       email,
       password: passwordHash,
     }).save();
-    const token = await createAccessToken({ id: userSaved._id });
+    const token = await createAccessToken({ id: savedUser._id });
     // Envio de token en el body
     /* res.json({ token }); */
     // Envio de token en cookie
     res.cookie("token", token);
     res.json({
-      id: userSaved._id,
-      username: userSaved.username,
-      email: userSaved.email,
+      id: savedUser._id,
+      username: savedUser.username,
+      email: savedUser.email,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
