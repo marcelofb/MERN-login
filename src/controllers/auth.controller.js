@@ -5,6 +5,9 @@ import bcryptjs from "bcryptjs";
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
   try {
+    const userFound = await User.findOne({ email });
+    if (userFound)
+      return res.status(400).json({ errors: ["Email already exists"] });
     const passwordHash = await bcryptjs.hash(password, 10);
     const savedUser = await new User({
       username,
@@ -22,7 +25,7 @@ export const register = async (req, res) => {
       email: savedUser.email,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ errors: [error.message] });
   }
 };
 export const login = async (req, res) => {
